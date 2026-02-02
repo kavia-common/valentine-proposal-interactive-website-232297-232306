@@ -23,6 +23,13 @@ function PlayfulQuestion({ question, onYes, onBack }) {
   const [noWhooshOn, setNoWhooshOn] = useState(false);
   const whooshVecRef = useRef({ dx: 1, dy: 0 });
 
+  /**
+   * Some browsers will fire both pointerenter and mouseenter for a single move
+   * onto the element. Keep a tiny time-based guard to ensure we count exactly
+   * one dodge per user attempt.
+   */
+  const lastDodgeAtRef = useRef(0);
+
   const reducedMotion = useMemo(() => {
     if (typeof window === "undefined" || !window.matchMedia) return false;
     return window.matchMedia("(prefers-reduced-motion: reduce)").matches;
@@ -52,6 +59,17 @@ function PlayfulQuestion({ question, onYes, onBack }) {
     }
   }, [noPos, reducedMotion]);
 
+  const triggerNoDodge = useCallback(() => {
+    if (reducedMotion) return;
+
+    const now = Date.now();
+    // 40ms is enough to collapse same-intent duplicate events without affecting UX.
+    if (now - lastDodgeAtRef.current < 40) return;
+
+    lastDodgeAtRef.current = now;
+    randomizeNoPosition();
+  }, [randomizeNoPosition, reducedMotion]);
+
   // If the No button gets focus (keyboard), dodge once to keep the playful effect,
   // but do not trap keyboard users: they can still tab away and press Yes easily.
   useEffect(() => {
@@ -59,12 +77,12 @@ function PlayfulQuestion({ question, onYes, onBack }) {
     if (!btn) return;
 
     const onFocus = () => {
-      if (!reducedMotion) randomizeNoPosition();
+      triggerNoDodge();
     };
 
     btn.addEventListener("focus", onFocus);
     return () => btn.removeEventListener("focus", onFocus);
-  }, [randomizeNoPosition, reducedMotion]);
+  }, [triggerNoDodge]);
 
   // PUBLIC_INTERFACE
   const handleYes = () => {
@@ -158,15 +176,12 @@ function PlayfulQuestion({ question, onYes, onBack }) {
                 ref={noBtnRef}
                 type="button"
                 className="vp-btn vp-btn--secondary"
-                onMouseEnter={() => {
-                  if (!reducedMotion) randomizeNoPosition();
-                }}
-                onPointerEnter={() => {
-                  if (!reducedMotion) randomizeNoPosition();
-                }}
+                // Prefer pointer events; they cover mouse, touch, and pen.
+                // We intentionally avoid also wiring mouseenter to prevent double-firing.
+                onPointerEnter={triggerNoDodge}
                 onClick={() => {
                   // If user manages to click No, we keep it playful: dodge again and show a hint.
-                  if (!reducedMotion) randomizeNoPosition();
+                  triggerNoDodge();
                 }}
                 aria-label="No (mischievous button)"
               >

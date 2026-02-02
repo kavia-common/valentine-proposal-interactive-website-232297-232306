@@ -7,6 +7,19 @@ test("renders landing start button", () => {
   expect(startBtn).toBeInTheDocument();
 });
 
+test("no dodge counter increments once per dodge", () => {
+  render(<App />);
+
+  fireEvent.click(screen.getByRole("button", { name: /start/i }));
+
+  const noBtn = screen.getByRole("button", { name: /no \(mischievous button\)/i });
+
+  // Simulate a user moving onto the No button.
+  fireEvent.pointerEnter(noBtn);
+
+  expect(screen.getByText(/dodged 1 time/i)).toBeInTheDocument();
+});
+
 test("reveal includes a polite aria-live announcement", () => {
   render(<App />);
 
