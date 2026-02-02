@@ -27,11 +27,23 @@ Launches the test runner in interactive watch mode.
 Builds the app for production to the `build` folder.\
 It correctly bundles React in production mode and optimizes the build for the best performance.
 
-## Customization
+## Customization (Valentine Proposal App)
+
+### Replace images
+- Put your photos in `src/assets/` (replace `couple1.jpg`, `couple2.jpg`, `couple3.jpg`).
+- Update imports at the top of `src/App.js` if you change filenames.
+
+### Edit text
+- Landing intro message: `src/App.js` → `Landing` props (`title`, `message`)
+- Reveal message: `src/App.js` → `SurpriseReveal` props (`headline`, `message`)
+
+### Tweak the “No” behavior
+- Open `src/components/PlayfulQuestion.js` and find the comment:
+  `TODO No behavior: tweak these values for more/less “evasiveness”.`
+- You can change the random range and clamp margins to make the No button move more or less.
 
 ### Colors
-
-The main brand colors are defined as CSS variables in `src/App.css`:
+The Ocean Professional theme colors are defined in `src/App.css` as CSS variables.
 
 ```css
 :root {
