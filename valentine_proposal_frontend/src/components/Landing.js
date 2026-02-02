@@ -1,14 +1,66 @@
-import React, { useEffect, useId, useState } from "react";
+import React, { useEffect, useId, useMemo, useState } from "react";
+import { LANDING_MEDIA } from "../animationConfig";
 
 /**
  * Landing screen with photo collage/carousel and an intro message.
  * Photos are local assets so the app works completely frontend-only.
+ *
+ * Image fitting controls:
+ * - fitMode: "cover" | "contain" (default: "cover")
+ * - focalX: "left" | "center" | "right" (default: "center")
+ * - focalY: "top" | "center" | "bottom" (default: "center")
+ * - aspect: "auto" | "4:3" | "16:9" | "1:1" (default: "auto")
  */
 
 // PUBLIC_INTERFACE
-function Landing({ photos, onStart, title, message }) {
+function Landing({
+  photos,
+  onStart,
+  title,
+  message,
+  fitMode = LANDING_MEDIA.fitMode,
+  focalX = LANDING_MEDIA.focalX,
+  focalY = LANDING_MEDIA.focalY,
+  aspect = LANDING_MEDIA.aspect,
+}) {
   const carouselId = useId();
   const [activeIndex, setActiveIndex] = useState(0);
+
+  const mediaClasses = useMemo(() => {
+    const normFit = fitMode === "contain" ? "contain" : "cover";
+    const normX = ["left", "center", "right"].includes(focalX) ? focalX : "center";
+    const normY = ["top", "center", "bottom"].includes(focalY) ? focalY : "center";
+
+    const fitClass = normFit === "contain" ? "vp-fitContain" : "vp-fitCover";
+
+    const aspectClass =
+      aspect === "4:3"
+        ? "vp-aspect4x3"
+        : aspect === "16:9"
+          ? "vp-aspect16x9"
+          : aspect === "1:1"
+            ? "vp-aspect1x1"
+            : "vp-aspectAuto";
+
+    // Use combined focal classes so X+Y can be set precisely.
+    const focalMap = {
+      left: { top: "vp-focalYXLeftTop", center: "vp-focalYXLeftCenter", bottom: "vp-focalYXLeftBottom" },
+      center: {
+        top: "vp-focalYXCenterTop",
+        center: "vp-focalYXCenterCenter",
+        bottom: "vp-focalYXCenterBottom",
+      },
+      right: { top: "vp-focalYXRightTop", center: "vp-focalYXRightCenter", bottom: "vp-focalYXRightBottom" },
+    };
+
+    const focalClass = focalMap[normX]?.[normY] ?? "vp-focalYXCenterCenter";
+
+    return {
+      fitClass,
+      focalClass,
+      aspectClass,
+    };
+  }, [aspect, fitMode, focalX, focalY]);
 
   useEffect(() => {
     // Keep active index in bounds if the photo list changes.
@@ -49,8 +101,16 @@ function Landing({ photos, onStart, title, message }) {
           <div className="vp-collage" aria-label="Photo collage">
             {hasPhotos ? (
               photos.slice(0, 3).map((p, idx) => (
-                <figure key={`${p.alt}-${idx}`} className={`vp-collage__item vp-collage__item--${idx + 1}`}>
-                  <img className="vp-collage__img" src={p.src} alt={p.alt} loading="lazy" />
+                <figure
+                  key={`${p.alt}-${idx}`}
+                  className={`vp-collage__item vp-collage__item--${idx + 1} vp-mediaFrame ${mediaClasses.aspectClass} vp-mediaFrame--roundedMd`}
+                >
+                  <img
+                    className={`vp-collage__img vp-mediaFrame__img ${mediaClasses.fitClass} ${mediaClasses.focalClass}`}
+                    src={p.src}
+                    alt={p.alt}
+                    loading="lazy"
+                  />
                 </figure>
               ))
             ) : (
@@ -78,7 +138,14 @@ function Landing({ photos, onStart, title, message }) {
               <div className="vp-carousel__frame" aria-live="polite">
                 {active ? (
                   <>
-                    <img className="vp-carousel__img" src={active.src} alt={active.alt} loading="lazy" />
+                    <div className={`vp-mediaFrame ${mediaClasses.aspectClass} vp-mediaFrame--roundedSm`}>
+                      <img
+                        className={`vp-carousel__img vp-mediaFrame__img ${mediaClasses.fitClass} ${mediaClasses.focalClass}`}
+                        src={active.src}
+                        alt={active.alt}
+                        loading="lazy"
+                      />
+                    </div>
                     <div className="vp-carousel__caption">{active.caption}</div>
                   </>
                 ) : (

@@ -337,10 +337,64 @@
   grid-column: 2;
 }
 
+/* Media fitting utilities (Landing collage + carousel)
+   - Provide consistent "frame" behavior with rounded corners + overflow hidden
+   - Provide object-fit and object-position utilities for cropping/fitting control
+*/
+.vp-mediaFrame {
+  position: relative;
+  width: 100%;
+  border-radius: 14px;
+  overflow: hidden;
+}
+
+.vp-mediaFrame--roundedSm { border-radius: 10px; }
+.vp-mediaFrame--roundedMd { border-radius: 14px; }
+
+/* Aspect ratio utilities (fallback-friendly).
+   Note: "aspect-ratio" is widely supported; we still set a min-height on carousel frame elsewhere. */
+.vp-aspectAuto { aspect-ratio: auto; }
+.vp-aspect4x3 { aspect-ratio: 4 / 3; }
+.vp-aspect16x9 { aspect-ratio: 16 / 9; }
+.vp-aspect1x1 { aspect-ratio: 1 / 1; }
+
+/* Ensure the inner media fills the frame */
+.vp-mediaFrame__img {
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+
+/* Fit modes */
+.vp-fitCover { object-fit: cover; }
+.vp-fitContain { object-fit: contain; background: rgba(17, 24, 39, 0.02); }
+
+/* Focal alignment (object-position) */
+.vp-focalXLeft { object-position: left center; }
+.vp-focalXCenter { object-position: center center; }
+.vp-focalXRight { object-position: right center; }
+
+.vp-focalYTop { object-position: center top; }
+.vp-focalYCenter { object-position: center center; }
+.vp-focalYBottom { object-position: center bottom; }
+
+/* If both X and Y are set, Y classes should win for vertical and X for horizontal. */
+.vp-focalYXLeftTop { object-position: left top; }
+.vp-focalYXCenterTop { object-position: center top; }
+.vp-focalYXRightTop { object-position: right top; }
+
+.vp-focalYXLeftCenter { object-position: left center; }
+.vp-focalYXCenterCenter { object-position: center center; }
+.vp-focalYXRightCenter { object-position: right center; }
+
+.vp-focalYXLeftBottom { object-position: left bottom; }
+.vp-focalYXCenterBottom { object-position: center bottom; }
+.vp-focalYXRightBottom { object-position: right bottom; }
+
+/* Collage: images now use the shared media frame utilities */
 .vp-collage__img {
   width: 100%;
   height: 100%;
-  object-fit: cover;
   display: block;
 }
 

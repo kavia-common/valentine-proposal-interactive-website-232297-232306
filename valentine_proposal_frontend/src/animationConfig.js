@@ -40,3 +40,31 @@ export const HEARTS = {
   /** Number of floating heart emojis on reveal. */
   revealCount: 7,
 };
+
+/**
+ * Landing image rendering defaults (collage + carousel).
+ * This is intentionally not animation-related, but is kept here as a simple
+ * "tunable config" location alongside other UI tuning constants.
+ */
+// PUBLIC_INTERFACE
+export const LANDING_MEDIA = {
+  /**
+   * How the images should fit inside their frames.
+   * - "cover": fills the frame and crops overflow (default, best for collage)
+   * - "contain": shows the full image (may letterbox)
+   */
+  fitMode: "cover",
+
+  /**
+   * Focal alignment, mapped to CSS object-position.
+   * Accepts: "left" | "center" | "right" and "top" | "center" | "bottom".
+   */
+  focalX: "center",
+  focalY: "center",
+
+  /**
+   * Frame aspect ratio utility.
+   * Supported values: "auto" | "4:3" | "16:9" | "1:1"
+   */
+  aspect: "auto",
+};

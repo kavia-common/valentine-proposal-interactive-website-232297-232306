@@ -122,6 +122,17 @@ function App() {
                 // TODO: Replace with your personal message.
                 "I’ve been thinking about how lucky I am that we found each other. I made a tiny little page just for us… and one important question."
               }
+              /**
+               * Image fitting knobs (optional):
+               * - fitMode: "cover" | "contain"
+               * - focalX: "left" | "center" | "right"
+               * - focalY: "top" | "center" | "bottom"
+               * - aspect: "auto" | "4:3" | "16:9" | "1:1"
+               */
+              fitMode="cover"
+              focalX="center"
+              focalY="center"
+              aspect="auto"
             />
           )}
 
