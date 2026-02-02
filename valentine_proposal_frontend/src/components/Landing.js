@@ -37,7 +37,7 @@ function Landing({ photos, onStart, title, message }) {
   return (
     <section className="vp-step vp-landing" aria-label="Landing screen">
       <div className="vp-landing__media">
-        <div className="vp-mediaCard" aria-label="Couple photos">
+        <div className="vp-mediaCard vp-landingMediaCard" aria-label="Couple photos">
           <div className="vp-mediaCard__top">
             <div className="vp-mediaCard__label">Our little collage</div>
             <div className="vp-mediaCard__note">
@@ -120,7 +120,12 @@ function Landing({ photos, onStart, title, message }) {
         <p className="vp-text">{message}</p>
 
         <div className="vp-actions" aria-label="Landing actions">
-          <button type="button" className="vp-btn vp-btn--primary vp-btn--lg" onClick={onStart} aria-label="Start">
+          <button
+            type="button"
+            className="vp-btn vp-btn--primary vp-btn--lg vp-btn--shimmer"
+            onClick={onStart}
+            aria-label="Start"
+          >
             Start
           </button>
           <div className="vp-subtext">

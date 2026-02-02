@@ -16,6 +16,13 @@ function PlayfulQuestion({ question, onYes, onBack }) {
   const [noDodges, setNoDodges] = useState(0);
   const [spark, setSpark] = useState(false);
 
+  // Yes hover burst (small, CSS-based hearts/confetti)
+  const [yesBurstOn, setYesBurstOn] = useState(false);
+
+  // No dodge whoosh trail (quick, CSS-based)
+  const [noWhooshOn, setNoWhooshOn] = useState(false);
+  const whooshVecRef = useRef({ dx: 1, dy: 0 });
+
   const reducedMotion = useMemo(() => {
     if (typeof window === "undefined" || !window.matchMedia) return false;
     return window.matchMedia("(prefers-reduced-motion: reduce)").matches;
@@ -26,11 +33,24 @@ function PlayfulQuestion({ question, onYes, onBack }) {
   const randomizeNoPosition = useCallback(() => {
     // TODO No behavior: tweak these values for more/less “evasiveness”.
     // Larger ranges and smaller margins = more movement.
+    const prev = noPos;
     const nextX = clamp(10 + Math.random() * 80, 6, 94);
     const nextY = clamp(10 + Math.random() * 70, 8, 92);
+
+    // Compute a simple movement vector for the whoosh direction.
+    const dx = nextX - prev.x;
+    const dy = nextY - prev.y;
+    const mag = Math.max(0.0001, Math.hypot(dx, dy));
+    whooshVecRef.current = { dx: dx / mag, dy: dy / mag };
+
     setNoPos({ x: nextX, y: nextY });
     setNoDodges((d) => d + 1);
-  }, []);
+
+    if (!reducedMotion) {
+      setNoWhooshOn(true);
+      window.setTimeout(() => setNoWhooshOn(false), 260);
+    }
+  }, [noPos, reducedMotion]);
 
   // If the No button gets focus (keyboard), dodge once to keep the playful effect,
   // but do not trap keyboard users: they can still tab away and press Yes easily.
@@ -60,6 +80,12 @@ function PlayfulQuestion({ question, onYes, onBack }) {
     onYes();
   };
 
+  const triggerYesHoverBurst = () => {
+    if (reducedMotion) return;
+    setYesBurstOn(true);
+    window.setTimeout(() => setYesBurstOn(false), 700);
+  };
+
   return (
     <section className="vp-step vp-question" aria-label="Question screen">
       <div className="vp-question__top">
@@ -83,14 +109,29 @@ function PlayfulQuestion({ question, onYes, onBack }) {
 
           <div className="vp-arena" ref={arenaRef} aria-label="Answer area">
             <div className="vp-arena__yes">
-              <button
-                type="button"
-                className="vp-btn vp-btn--primary vp-btn--lg"
-                onClick={handleYes}
-                aria-label="Yes, I will be your Valentine"
+              <div
+                className={`vp-yesWrap ${yesBurstOn ? "is-burst" : ""}`}
+                onMouseEnter={triggerYesHoverBurst}
+                onPointerEnter={triggerYesHoverBurst}
               >
-                Yes
-              </button>
+                <button
+                  type="button"
+                  className="vp-btn vp-btn--primary vp-btn--lg"
+                  onClick={handleYes}
+                  aria-label="Yes, I will be your Valentine"
+                >
+                  Yes
+                </button>
+
+                {/* Lightweight hearts/confetti burst for hover (CSS-only). */}
+                <span className="vp-yesBurst" aria-hidden="true">
+                  <i className="vp-yesBurst__p vp-yesBurst__p--1">♥</i>
+                  <i className="vp-yesBurst__p vp-yesBurst__p--2">♥</i>
+                  <i className="vp-yesBurst__p vp-yesBurst__p--3">♥</i>
+                  <i className="vp-yesBurst__p vp-yesBurst__p--4">♥</i>
+                  <i className="vp-yesBurst__p vp-yesBurst__p--5">♥</i>
+                </span>
+              </div>
             </div>
 
             <div
@@ -100,6 +141,19 @@ function PlayfulQuestion({ question, onYes, onBack }) {
                 top: `${noPos.y}%`,
               }}
             >
+              {/* Quick whoosh trail when No dodges (CSS-only). */}
+              {noWhooshOn ? (
+                <span
+                  className="vp-noWhoosh"
+                  aria-hidden="true"
+                  style={{
+                    // Use CSS vars to point the whoosh roughly opposite direction of movement.
+                    ["--vx"]: String(-whooshVecRef.current.dx),
+                    ["--vy"]: String(-whooshVecRef.current.dy),
+                  }}
+                />
+              ) : null}
+
               <button
                 ref={noBtnRef}
                 type="button"

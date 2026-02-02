@@ -190,6 +190,30 @@
   background: linear-gradient(180deg, var(--vp-primary), var(--vp-primary-600));
   color: white;
   box-shadow: 0 12px 22px rgba(37, 99, 235, 0.22);
+  position: relative;
+  overflow: hidden;
+}
+
+/* Gentle shimmer for CTA buttons (Start), kept subtle. */
+.vp-btn--shimmer::after {
+  content: "";
+  position: absolute;
+  inset: -2px;
+  background: linear-gradient(
+    110deg,
+    rgba(255, 255, 255, 0) 0%,
+    rgba(255, 255, 255, 0.18) 40%,
+    rgba(255, 255, 255, 0.00) 70%
+  );
+  transform: translateX(-140%);
+  animation: vp-shimmer 1800ms linear infinite;
+  pointer-events: none;
+}
+
+@keyframes vp-shimmer {
+  0% { transform: translateX(-140%); }
+  60% { transform: translateX(140%); }
+  100% { transform: translateX(140%); }
 }
 
 .vp-btn--primary:hover {
@@ -248,6 +272,19 @@
   border-radius: 16px;
   box-shadow: var(--vp-shadow-soft);
   overflow: hidden;
+}
+
+/* Landing: subtle floating/tilt animation on the media card. */
+.vp-landingMediaCard {
+  transform-origin: 50% 40%;
+  animation: vp-landing-float 5200ms cubic-bezier(.2,.8,.2,1) infinite;
+  will-change: transform;
+}
+
+@keyframes vp-landing-float {
+  0%, 100% { transform: translateY(0) rotate(0deg); }
+  35% { transform: translateY(-4px) rotate(-0.3deg); }
+  70% { transform: translateY(-2px) rotate(0.35deg); }
 }
 
 .vp-mediaCard__top {
@@ -501,9 +538,85 @@
   bottom: 14px;
 }
 
+.vp-yesWrap {
+  position: relative;
+  display: inline-block;
+}
+
+.vp-yesBurst {
+  position: absolute;
+  inset: -26px -34px auto auto;
+  width: 120px;
+  height: 70px;
+  pointer-events: none;
+  opacity: 0;
+}
+
+.vp-yesWrap.is-burst .vp-yesBurst {
+  opacity: 1;
+}
+
+.vp-yesBurst__p {
+  position: absolute;
+  left: 50%;
+  top: 60%;
+  transform: translate(-50%, -50%);
+  color: rgba(245, 158, 11, 0.65);
+  filter: drop-shadow(0 6px 14px rgba(17, 24, 39, 0.08));
+  opacity: 0;
+}
+
+/* Hover burst: tiny "pop" paths using transforms (no layout thrash). */
+.vp-yesWrap.is-burst .vp-yesBurst__p {
+  animation: vp-yes-burst 700ms cubic-bezier(.2,.8,.2,1) forwards;
+}
+
+.vp-yesBurst__p--1 { --tx: -22px; --ty: -18px; animation-delay: 0ms; }
+.vp-yesBurst__p--2 { --tx: -6px;  --ty: -28px; animation-delay: 20ms; color: rgba(37, 99, 235, 0.55); }
+.vp-yesBurst__p--3 { --tx: 16px;  --ty: -22px; animation-delay: 40ms; }
+.vp-yesBurst__p--4 { --tx: 26px;  --ty: -10px; animation-delay: 60ms; color: rgba(37, 99, 235, 0.55); }
+.vp-yesBurst__p--5 { --tx: 8px;   --ty: -34px; animation-delay: 80ms; }
+
+@keyframes vp-yes-burst {
+  0%   { transform: translate(-50%, -50%) scale(0.7); opacity: 0; }
+  15%  { opacity: 1; }
+  100% { transform: translate(calc(-50% + var(--tx)), calc(-50% + var(--ty))) scale(1.08); opacity: 0; }
+}
+
 .vp-arena__no {
   position: absolute;
   transform: translate(-50%, -50%);
+}
+
+/* No-dodge whoosh trail (quick + subtle). Uses CSS vars --vx/--vy for direction. */
+.vp-noWhoosh {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 72px;
+  height: 18px;
+  transform: translate(-50%, -50%);
+  border-radius: 999px;
+  background: radial-gradient(closest-side, rgba(37, 99, 235, 0.18), rgba(37, 99, 235, 0));
+  filter: blur(0.2px);
+  opacity: 0.0;
+  pointer-events: none;
+  animation: vp-whoosh 260ms cubic-bezier(.2,.8,.2,1) forwards;
+  will-change: transform, opacity;
+}
+
+@keyframes vp-whoosh {
+  0% {
+    opacity: 0.0;
+    transform: translate(-50%, -50%) scaleX(0.65);
+  }
+  25% { opacity: 0.9; }
+  100% {
+    opacity: 0;
+    transform:
+      translate(calc(-50% + (var(--vx, -1) * 24px)), calc(-50% + (var(--vy, 0) * 14px)))
+      scaleX(1.15);
+  }
 }
 
 .vp-badge {
@@ -579,6 +692,19 @@
   animation-name: vp-confetti-fall;
   animation-timing-function: cubic-bezier(.2,.8,.2,1);
   animation-fill-mode: forwards;
+  will-change: transform, opacity;
+}
+
+/* Richer confetti: burst pieces are a bit more energetic, drizzle is calmer. */
+.vp-confetti--rich .vp-confetti__piece--burst {
+  width: 10px;
+  height: 14px;
+}
+
+.vp-confetti--rich .vp-confetti__piece--drizzle {
+  width: 8px;
+  height: 12px;
+  opacity: 0.9;
 }
 
 .vp-confetti__piece--0 { background: rgba(37, 99, 235, 0.85); }
@@ -588,13 +714,54 @@
 .vp-confetti__piece--4 { background: rgba(239, 68, 68, 0.78); }
 
 @keyframes vp-confetti-fall {
-  0% { transform: translateY(-10px) rotate(0deg); opacity: 0.0; }
+  0% { transform: translate3d(0, -10px, 0) rotate(0deg); opacity: 0.0; }
   15% { opacity: 1; }
-  100% { transform: translateY(320px) rotate(260deg); opacity: 0.0; }
+  100% { transform: translate3d(var(--drift, 0px), 320px, 0) rotate(260deg); opacity: 0.0; }
+}
+
+/* Reveal floating hearts layer */
+.vp-revealHearts {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  overflow: hidden;
+}
+
+.vp-revealHearts__heart {
+  position: absolute;
+  bottom: 12px;
+  opacity: 0;
+  animation: vp-reveal-heart 2200ms cubic-bezier(.2,.8,.2,1) forwards;
+  will-change: transform, opacity;
+  filter: drop-shadow(0 10px 20px rgba(17, 24, 39, 0.10));
+}
+
+@keyframes vp-reveal-heart {
+  0%   { transform: translate3d(0, 0, 0) scale(0.92); opacity: 0; }
+  15%  { opacity: 0.95; }
+  100% { transform: translate3d(var(--drift, 0px), -160px, 0) scale(1.05); opacity: 0; }
+}
+
+/* Screen-reader only (for polite announcements). */
+.vp-srLive {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
 }
 
 @media (prefers-reduced-motion: reduce) {
   .vp-confetti { display: none; }
+  .vp-landingMediaCard { animation: none; }
+  .vp-btn--shimmer::after { animation: none; display: none; }
+  .vp-yesBurst__p { animation: none; }
+  .vp-noWhoosh { animation: none; display: none; }
+  .vp-revealHearts { display: none; }
 }
 
 /* Footer */
