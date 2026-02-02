@@ -462,12 +462,36 @@
   position: relative;
 }
 
+/*
+  Carousel (slider) image fitting:
+  - Ensure full image is visible (no cropping) by default.
+  - The inner .vp-mediaFrame owns the "frame" sizing via aspect-ratio; the img fills it.
+*/
 .vp-carousel__img {
   width: 100%;
-  height: 120px;
-  object-fit: cover;
-  border-radius: 10px;
+  height: 100%;
   display: block;
+
+  /* Slider default: show full image */
+  object-fit: contain;
+  object-position: center;
+
+  /* Keeps letterboxing subtle when contain introduces empty space */
+  background: rgba(17, 24, 39, 0.02);
+  border-radius: 10px;
+}
+
+/* Ensure the carousel media frame has a sensible height even when aspect="auto" */
+.vp-carousel__frame .vp-mediaFrame.vp-aspectAuto {
+  aspect-ratio: 16 / 9;
+  min-height: 160px;
+}
+
+/* Slightly taller on larger screens to avoid overly small letterboxed images */
+@media (min-width: 860px) {
+  .vp-carousel__frame .vp-mediaFrame.vp-aspectAuto {
+    min-height: 190px;
+  }
 }
 
 .vp-carousel__caption {

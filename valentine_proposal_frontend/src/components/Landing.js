@@ -140,7 +140,12 @@ function Landing({
                   <>
                     <div className={`vp-mediaFrame ${mediaClasses.aspectClass} vp-mediaFrame--roundedSm`}>
                       <img
-                        className={`vp-carousel__img vp-mediaFrame__img ${mediaClasses.fitClass} ${mediaClasses.focalClass}`}
+                        /*
+                          Slider behavior: always show full image without cropping.
+                          We intentionally DO NOT change collage behavior; collage continues
+                          to follow the Landing-level fit/focal/aspect controls.
+                        */
+                        className="vp-carousel__img vp-mediaFrame__img vp-fitContain vp-focalYXCenterCenter"
                         src={active.src}
                         alt={active.alt}
                         loading="lazy"
