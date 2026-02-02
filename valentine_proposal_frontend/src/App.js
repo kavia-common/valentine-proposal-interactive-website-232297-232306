@@ -1,9 +1,13 @@
 import React, { useEffect, useMemo, useState } from "react";
 import "./App.css";
 
-import couple1 from "./assets/couple1.jpg";
-import couple2 from "./assets/couple2.jpg";
-import couple3 from "./assets/couple3.jpg";
+import couple01 from "./assets/couple-01.jpeg";
+import couple02 from "./assets/couple-02.jpeg";
+import couple03 from "./assets/couple-03.jpeg";
+import couple04 from "./assets/couple-04.jpeg";
+import couple05 from "./assets/couple-05.jpeg";
+import couple06 from "./assets/couple-06.jpeg";
+import couple07 from "./assets/couple-07.jpeg";
 
 import Landing from "./components/Landing";
 import PlayfulQuestion from "./components/PlayfulQuestion";
@@ -26,19 +30,39 @@ function App() {
   const photos = useMemo(
     () => [
       {
-        src: couple1,
-        alt: "Couple photo placeholder 1",
+        src: couple01,
+        alt: "Couple photo 1",
         caption: "Us — memory #1",
       },
       {
-        src: couple2,
-        alt: "Couple photo placeholder 2",
+        src: couple02,
+        alt: "Couple photo 2",
         caption: "Us — memory #2",
       },
       {
-        src: couple3,
-        alt: "Couple photo placeholder 3",
+        src: couple03,
+        alt: "Couple photo 3",
         caption: "Us — memory #3",
+      },
+      {
+        src: couple04,
+        alt: "Couple photo 4",
+        caption: "Us — memory #4",
+      },
+      {
+        src: couple05,
+        alt: "Couple photo 5",
+        caption: "Us — memory #5",
+      },
+      {
+        src: couple06,
+        alt: "Couple photo 6",
+        caption: "Us — memory #6",
+      },
+      {
+        src: couple07,
+        alt: "Couple photo 7",
+        caption: "Us — memory #7",
       },
     ],
     []
